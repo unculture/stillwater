@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#112d2e">
+  <meta name="description" content="A small space to exhale. Play with flowing shapes, leave a ripple, and drift into gentle ambient sound.">
+  <title>Stillwater · A small space to exhale</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./panels.css">
+</head>
+<body>
+  <canvas id="world" aria-label="Interactive flowing rings. Move your pointer to bend the threads. Click or touch to create a ripple." tabindex="0"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="cursor" aria-hidden="true"><span></span></div>
+
+  <header class="header ui">
+    <a class="brand" href="./" aria-label="Stillwater home">
+      <svg class="brand-icon" viewBox="0 0 42 42" fill="none" aria-hidden="true"><ellipse cx="21" cy="21" rx="18" ry="12" transform="rotate(-35 21 21)"/><ellipse cx="21" cy="21" rx="13" ry="9" transform="rotate(-35 21 21)"/><ellipse cx="21" cy="21" rx="8" ry="5.5" transform="rotate(-35 21 21)"/></svg>
+      <span>stillwater<span class="brand-dot">.</span></span>
+    </a>
+    <div class="header-actions">
+      <button id="sound-toggle" class="sound-button" aria-pressed="false" title="Toggle ambient sound (M)">
+        <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span id="sound-label">Sound off</span>
+      </button>
+      <button id="soundscape-toggle" class="icon-button soundscape-toggle" aria-label="Choose a soundscape" aria-haspopup="dialog" title="Choose a soundscape"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+      <button id="mobile-pause" class="icon-button mobile-pause" aria-label="Pause motion" aria-pressed="false" title="Pause motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button>
+      <button id="fullscreen" class="icon-button fullscreen-button" aria-label="Enter full screen" title="Full screen (F)"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/></svg></button>
+    </div>
+  </header>
+
+  <main class="intro ui">
+    <div class="eyebrow"><span class="tiny-star" aria-hidden="true">✳</span> A SMALL SPACE TO EXHALE</div>
+    <h1>Less noise.<br>More <em>wonder.</em></h1>
+    <p>Follow a thread. Leave a ripple.<br>Stay a little while.</p>
+    <button id="breath-toggle" class="breath-button" aria-pressed="false"><span class="breath-symbol" aria-hidden="true"></span><span id="breath-label">Take a breath</span><span class="button-arrow" aria-hidden="true">↗</span></button>
+  </main>
+
+  <div class="art-caption ui" aria-live="polite"><span id="scene-number">01</span><span class="caption-line"></span><span id="scene-caption">THE QUIET BETWEEN WAVES</span></div>
+  <div id="breath-guide" class="breath-guide" aria-hidden="true"><span id="breath-word">breathe in</span><span class="breath-count" id="breath-count">4</span></div>
+  <div class="gesture-hint ui"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 13V5a2 2 0 0 1 4 0v5m0-1a2 2 0 0 1 4 0v2m0-1a2 2 0 0 1 4 0v5c0 4-3 6-6 6h-1c-2 0-3-1-4-2l-5-6a2 2 0 0 1 3-2l3 3"/></svg><span>move to wander <span class="hint-dot">·</span> hold to draw the tide</span></div>
+
+  <section class="controls ui" aria-label="Shape and atmosphere controls">
+    <div class="wander-controls"><button id="wander-toggle" aria-pressed="false" title="Automatically wander through every shape (W)"><span class="wander-light" aria-hidden="true"></span><span id="wander-label">Let it wander</span></button><label class="wander-timing" for="wander-interval"><span class="sr-only">Time between shapes</span><select id="wander-interval"><option value="20">every 20s</option><option value="45" selected>every 45s</option><option value="90">every 90s</option></select></label><span id="wander-countdown" aria-live="off"></span></div>
+    <div class="control-group scene-group">
+      <span class="control-label">WANDER THROUGH</span>
+      <div class="scene-buttons">
+        <button id="shape-picker" class="shape-picker" aria-haspopup="dialog" title="Explore all shapes"><svg viewBox="0 0 26 26" fill="none" aria-hidden="true"><ellipse cx="13" cy="13" rx="10" ry="8" transform="rotate(-30 13 13)"/><ellipse cx="13" cy="13" rx="6.5" ry="5" transform="rotate(-30 13 13)"/><ellipse cx="13" cy="13" rx="3" ry="2" transform="rotate(-30 13 13)"/></svg><span id="shape-label">Tide</span><span class="picker-chevron" aria-hidden="true">⌄</span></button>
+        <button id="previous-shape" class="icon-button scene-step" aria-label="Previous shape" title="Previous shape">‹</button>
+        <button id="next-shape" class="icon-button scene-step" aria-label="Next shape" title="Next shape">›</button>
+      </div>
+    </div>
+    <div class="control-divider"></div>
+    <div class="control-group palette-group">
+      <span class="control-label" id="palette-label">SEA GLASS</span>
+      <div class="palette-buttons" role="group" aria-label="Choose a color palette">
+        <button class="palette-button selected" data-palette="0" aria-label="Sea glass palette" aria-pressed="true" title="Sea glass"><span style="--swatch: linear-gradient(135deg,#b1d5bb 0%,#80b6af 50%,#7798b7 100%)"></span></button>
+        <button class="palette-button" data-palette="1" aria-label="Afterglow palette" aria-pressed="false" title="Afterglow"><span style="--swatch: linear-gradient(135deg,#e7bdac 0%,#b992b9 50%,#8582ac 100%)"></span></button>
+        <button class="palette-button" data-palette="2" aria-label="Golden hour palette" aria-pressed="false" title="Golden hour"><span style="--swatch: linear-gradient(135deg,#ecd1a1 0%,#cea982 50%,#a5ad8e 100%)"></span></button>
+      </div>
+    </div>
+    <div class="control-divider motion-divider"></div>
+    <div class="control-group motion-group">
+      <label class="control-label" for="motion">PACE <span id="pace-label">unhurried</span></label>
+      <input id="motion" type="range" min="0" max="100" value="35" aria-label="Motion pace" aria-valuetext="Unhurried">
+    </div>
+    <div class="control-divider utility-divider"></div>
+    <div class="utility-buttons">
+      <button id="shuffle" class="icon-button" aria-label="Surprise me with a shape" title="Surprise me with a shape (R)"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h3c4 0 6 10 10 10h3M17 14l3 3-3 3M4 17h3c1.6 0 3-1.6 4.3-3.7M13 9c1.2-1.3 2.4-2 4-2h3m-3-3 3 3-3 3"/></svg></button>
+      <button id="pause" class="icon-button" aria-label="Pause motion" aria-pressed="false" title="Pause motion (Space)"><svg id="pause-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button>
+    </div>
+  </section>
+
+  <footer class="footer ui"><span>A little play. A little peace.</span><div><a id="shape-credit" href="https://bookofshapes.com/patterns/concentric_noise_rings" target="_blank" rel="noopener noreferrer">Shapes from Book of Shapes <span aria-hidden="true">↗</span></a><button id="help-toggle" aria-label="How to play" title="How to play (?)">?</button></div></footer>
+  <button id="show-ui" class="restore-ui" aria-label="Show controls">Show controls <span>H</span></button>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="help-dialog">
+    <button id="help-close" class="icon-button dialog-close" aria-label="Close instructions">×</button>
+    <span class="control-label">A LITTLE ROOM TO PLAY</span>
+    <h2>Find your own rhythm.</h2>
+    <p>Move your mouse to bend the threads. Click to send a ripple. Hold and drag to gather the current around you. Touch works, too.</p>
+    <p>Open the shape picker to explore the collection. Let it wander visits every shape in a shuffled order before it repeats.</p>
+    <p>The arrow beside Sound opens five soundscapes. Mix the music and surroundings separately, or listen to nature alone.</p>
+    <div class="volume-control"><label for="volume">Sound level</label><input id="volume" type="range" min="0" max="100" value="55"></div>
+    <div class="shortcuts"><span><kbd>M</kbd> Sound</span><span><kbd>Space</kbd> Pause</span><span><kbd>H</kbd> Hide controls</span><span><kbd>B</kbd> Breathe</span><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Shapes</span><span><kbd>R</kbd> Random shape</span><span><kbd>W</kbd> Auto wander</span></div>
+    <p class="credit">An animated collection of artwork by Nikolaj Sokolowski, from <a href="https://bookofshapes.com" target="_blank" rel="noopener noreferrer">Book of Shapes</a>. Music and nature sounds are synthesized here, in your browser.</p>
+  </dialog>
+  <dialog id="shape-dialog" class="collection-dialog">
+    <button id="shape-close" class="icon-button dialog-close" aria-label="Close shape gallery">×</button>
+    <span class="control-label">FOLLOW YOUR CURIOSITY</span>
+    <h2>A world of quiet shapes.</h2>
+    <p id="collection-description">Explore the collection, or leave the next discovery to chance.</p>
+    <div class="gallery-tools"><label class="shape-search"><span class="sr-only">Find a shape</span><input id="shape-search" type="search" placeholder="Find a shape…" autocomplete="off"></label><button id="gallery-shuffle" class="text-action">Surprise me ↗</button></div>
+    <div id="shape-gallery" class="shape-gallery" role="group" aria-label="Choose artwork"></div>
+    <p id="no-shapes" hidden>No shapes match that name.</p>
+    <p class="gallery-footnote">Artwork by Nikolaj Sokolowski, from <a href="https://bookofshapes.com" target="_blank" rel="noopener noreferrer">Book of Shapes</a>. A little room for curiosity.</p>
+  </dialog>
+  <dialog id="sound-dialog" class="sound-dialog">
+    <button id="sound-close" class="icon-button dialog-close" aria-label="Close soundscapes">×</button>
+    <span class="control-label">SOMEWHERE ELSE, FOR A WHILE</span>
+    <h2>A place to listen.</h2>
+    <p>Choose your surroundings. Let the music find its way.</p>
+    <div id="soundscape-list" class="soundscape-list" role="group" aria-label="Choose a soundscape"></div>
+    <div class="sound-mix">
+      <label for="music-mix">Music <output id="music-mix-value">85%</output></label><input id="music-mix" type="range" min="0" max="100" value="85">
+      <label for="nature-mix">Surroundings <output id="nature-mix-value">65%</output></label><input id="nature-mix" type="range" min="0" max="100" value="65">
+      <label for="sound-volume">Overall volume <output id="sound-volume-value">55%</output></label><input id="sound-volume" type="range" min="0" max="100" value="55">
+    </div>
+    <div class="sound-dialog-footer"><span id="soundscape-note">The original soundtrack, just as you remember it.</span><button id="sound-dialog-toggle" class="text-action">Turn sound on ↗</button></div>
+  </dialog>
+  <script src="./assets/rings.js"></script>
+  <script src="./assets/catalog.js"></script>
+  <script src="./scene-order.js"></script>
+  <script src="./pointer-motion.js"></script>
+  <script src="./shape-art.js"></script>
+  <script src="./audio.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
